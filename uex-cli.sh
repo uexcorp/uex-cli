@@ -20,7 +20,7 @@ function set_key {
     rm -f "$secret_file_key"
     printf "\033[1;33mSecret key cleared\033[0m\n"
   else
-    echo "$1" > "$secret_file_key"
+    printf "$1" > "$secret_file_key"
     secret_key="$1"
     printf "\033[0;32mSecret key installed\033[0m\n"
   fi
@@ -31,7 +31,7 @@ function load_environment {
     "local") uex_api_url="$uex_api_url_local" ;;
     "ptu") uex_api_url="$uex_api_url_ptu" ;;
     "production") uex_api_url="$uex_api_url_production" ;;
-    *) echo "\033[0;31mUnknown environment. Please set the environment using 'set env' command.\033[0m\n" ;;
+    *) printf "\033[0;31mUnknown environment. Please set the environment using 'set env' command.\033[0m\n" ;;
   esac
   export environment
 }
@@ -63,7 +63,7 @@ function send_request {
 # Environment instance
 
 if [ -f "$secret_file_env" ]; then
-  environment=$(cat "$secret_file_env") || { echo "Error reading environment file."; exit 1; }
+  environment=$(cat "$secret_file_env") || { printf "\033[0;31mError reading environment file.\033[0m\n"; exit 1; }
 else
   echo "production" > "$secret_file_env"
   environment="production"
@@ -81,7 +81,7 @@ fi
 # Secret key
 
 if [ -f "$secret_file_key" ]; then
-  secret_key=$(cat "$secret_file_key") || { echo "Error reading secret key file."; exit 1; }
+  secret_key=$(cat "$secret_file_key") || { printf "\033[0;31mError reading secret key file.\033[0m\n"; exit 1; }
 else
   printf "\033[1;30mNo secret key set. Use 'set key <value>' to set the secret key.\033[0m\n"
 fi
@@ -110,7 +110,7 @@ while true; do
 
   case "${input_array[0]}" in
     "exit")
-      echo "\033[1;30mSee you later!\033[0m"
+      printf "\033[1;30mSee you later!\033[0m"
       break
       ;;
     "set")
@@ -122,7 +122,7 @@ while true; do
           set_environment "${input_array[2]}"
           ;;
         *)
-          echo "\033[1;30mUsage:\nset key <value>\t\t# set your secret key\nset env <value>\t\t# set environment (local, ptu or production)\033[0m"
+          printf "\033[1;30mUsage:\nset key <value>\t\t# set your secret key\nset env <value>\t\t# set environment (local, ptu or production)\033[0m"
           ;;
       esac
       ;;
