@@ -110,7 +110,7 @@ while true; do
 
   case "${input_array[0]}" in
     "exit")
-      printf "\033[1;30mSee you later!\033[0m"
+      printf "See you later!"
       break
       ;;
     "set")
