@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# UEX 2.0 CLI
+# Copyright (C) 2954 United Express Corporation. All rights reserved.
+
 install_directory="/usr/local/bin"
 script_name="uex"
 script_url="https://raw.githubusercontent.com/uexcorp/uex-cli/main/uex-cli.sh"

@@ -1,15 +1,19 @@
 #!/bin/bash
 
-# Declare global variables
+# UEX 2.0 CLI
+# Copyright (C) 2954 United Express Corporation. All rights reserved.
+
 environment=""
 secret_key=""
 
-uex_api_url_local="http://localhost/uex/uex-v2/api/cli/"
-uex_api_url_ptu="https://ptu.uexcorp.space/api/cli"
-uex_api_url_production="https://uexcorp.space/api/cli"
+uex_api_url_local="http://localhost/uex/uex-v2/cli/"
+uex_api_url_ptu="https://ptu.uexcorp.space/cli"
+uex_api_url_production="https://uexcorp.space/cli"
 
 secret_file_key="$HOME/.uexkey"
 secret_file_env="$HOME/.uexenv"
+
+# Helpers
 
 function set_key {
   if [ -z "$1" ]; then
@@ -18,8 +22,18 @@ function set_key {
   else
     echo "$1" > "$secret_file_key"
     secret_key="$1"
-    printf "\033[0;32mSecret key set successfully\033[0m\n"
+    printf "\033[0;32mSecret key installed\033[0m\n"
   fi
+}
+
+function load_environment {
+  case "$environment" in
+    "local") uex_api_url="$uex_api_url_local" ;;
+    "ptu") uex_api_url="$uex_api_url_ptu" ;;
+    "production") uex_api_url="$uex_api_url_production" ;;
+    *) echo "\033[0;31mUnknown environment. Please set the environment using 'set env' command.\033[0m\n" ;;
+  esac
+  export environment
 }
 
 function set_environment {
@@ -32,18 +46,31 @@ function set_environment {
     environment="$1"
     printf "\033[0;32mEnvironment set: $1\033[0m\n"
   fi
+  load_environment
   export environment
 }
 
-# Check if the .uexenv file exists and set the environment variable
+function send_request {
+  response=$(curl -s -w "\n%{http_code}" -X POST -d "input=$1" -H "secret_key: $secret_key" "$uex_api_url")
+  http_code=$(echo "$response" | tail -n 1)
+  if [ "$http_code" != "200" ]; then
+    printf "\033[0;31mError ($http_code)\033[0m\n"
+  else
+    printf "%s" "${response%$http_code}"
+  fi
+}
+
+# Environment instance
+
 if [ -f "$secret_file_env" ]; then
   environment=$(cat "$secret_file_env") || { echo "Error reading environment file."; exit 1; }
 else
-  # Set default environment if not already set
   echo "production" > "$secret_file_env"
   environment="production"
 fi
 export environment
+
+# Launch
 
 if [ "$environment" != "production" ]; then
   printf "\n\033[0;32mWelcome to UEX CLI ($environment)\033[0m\n"
@@ -51,41 +78,25 @@ else
   printf "\n\033[0;32mWelcome to UEX CLI\033[0m\n"
 fi
 
-# Calls the welcome screen
+# Secret key
 
-if [ -f "$secret_key" ]; then
-  response=$(curl -s -w "\n%{http_code}" -X POST -d "input=home" -H "secret_key: $secret_key" "$uex_api_url")
-  http_code=$(echo "$response" | tail -n 1)
-  if [ "$http_code" != "200" ]; then
-    printf "\033[0;31mNot connected ($http_code)\033[0m\n"
-  else
-    printf "%s" "${response%$http_code}"
-  fi
-fi
-
-# Check if the .uexkey file exists and set the secret key
 if [ -f "$secret_file_key" ]; then
   secret_key=$(cat "$secret_file_key") || { echo "Error reading secret key file."; exit 1; }
 else
   printf "\033[1;30mNo secret key set. Use 'set key <value>' to set the secret key.\033[0m\n"
 fi
 
-case "$environment" in
-  "local") uex_api_url="$uex_api_url_local" ;;
-  "ptu") uex_api_url="$uex_api_url_ptu" ;;
-  "production") uex_api_url="$uex_api_url_production" ;;
-  *) echo "Unknown environment. Please set the environment using 'set env' command." ;;
-esac
+# Environment definition
 
-if [ -f "$secret_file_key" ]; then
-  response=$(curl -s -w "\n%{http_code}" -X POST -d "input=home" -H "secret_key: $secret_key" "$uex_api_url")
-  http_code=$(echo "$response" | tail -n 1)
-  if [ "$http_code" != "200" ]; then
-    printf "\033[0;31mError ($http_code)\033[0m\n\n"
-  else
-    printf "%s" "${response%$http_code}"
-  fi
+load_environment
+
+# MOTD
+
+if [ "$secret_key" ]; then
+  send_request "home"
 fi
+
+# Action
 
 while true; do
 
@@ -99,7 +110,7 @@ while true; do
 
   case "${input_array[0]}" in
     "exit")
-      echo "See ya!"
+      echo "\033[1;30mSee you later!\033[0m"
       break
       ;;
     "set")
@@ -111,25 +122,17 @@ while true; do
           set_environment "${input_array[2]}"
           ;;
         *)
-          echo "Unknown command. Please use 'set key <value>' or 'set env <value>'."
+          echo "\033[1;30mUsage:\nset key <value>\t\t# set your secret key\nset env <value>\t\t# set environment (local, ptu or production)\033[0m"
           ;;
       esac
       ;;
     *)
-      case "$environment" in
-        "local") uex_api_url="$uex_api_url_local" ;;
-        "ptu") uex_api_url="$uex_api_url_ptu" ;;
-        "production") uex_api_url="$uex_api_url_production" ;;
-        *) echo "Unknown environment. Please set the environment using 'set env' command." ;;
-      esac
+      load_environment
 
-      response=$(curl -s -w "\n%{http_code}" -X POST -d "input=$user_input" -H "secret_key: $secret_key" "$uex_api_url")
-      http_code=$(echo "$response" | tail -n 1)
-      if [ "$http_code" != "200" ]; then
-        printf "\033[0;31mError ($http_code)\033[0m\n"
-      else
-        printf "%s" "${response%$http_code}"
-      fi
+      # Request
+
+      send_request "$user_input"
+
       ;;
   esac
 done
