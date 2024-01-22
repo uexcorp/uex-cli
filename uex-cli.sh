@@ -7,8 +7,8 @@ environment=""
 secret_key=""
 
 uex_api_url_local="http://localhost/uex/uex-v2/cli/"
-uex_api_url_ptu="https://ptu.uexcorp.space/cli"
-uex_api_url_production="https://uexcorp.space/cli"
+uex_api_url_ptu="https://ptu.uexcorp.space/cli/"
+uex_api_url_production="https://uexcorp.space/cli/"
 
 secret_file_key="$HOME/.uexkey"
 secret_file_env="$HOME/.uexenv"
