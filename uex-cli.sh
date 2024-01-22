@@ -46,9 +46,21 @@ fi
 export environment
 
 if [ "$environment" != "production" ]; then
-  printf "\n\033[0;32mWelcome to UEX CLI! ($environment)\033[0m\n"
+  printf "\n\033[0;32mWelcome to UEX CLI ($environment)\033[0m\n"
 else
-  printf "\n\033[0;32mWelcome to UEX CLI!\033[0m\n"
+  printf "\n\033[0;32mWelcome to UEX CLI\033[0m\n"
+fi
+
+# Calls the welcome screen
+
+if [ -f "$secret_key" ]; then
+  response=$(curl -s -w "\n%{http_code}" -X POST -d "input=home" -H "secret_key: $secret_key" "$uex_api_url")
+  http_code=$(echo "$response" | tail -n 1)
+  if [ "$http_code" != "200" ]; then
+    printf "\033[0;31mNot connected ($http_code)\033[0m\n"
+  else
+    printf "%s" "${response%$http_code}"
+  fi
 fi
 
 # Check if the .uexkey file exists and set the secret key
@@ -56,6 +68,23 @@ if [ -f "$secret_file_key" ]; then
   secret_key=$(cat "$secret_file_key") || { echo "Error reading secret key file."; exit 1; }
 else
   printf "\033[1;30mNo secret key set. Use 'set key <value>' to set the secret key.\033[0m\n"
+fi
+
+case "$environment" in
+  "local") uex_api_url="$uex_api_url_local" ;;
+  "ptu") uex_api_url="$uex_api_url_ptu" ;;
+  "production") uex_api_url="$uex_api_url_production" ;;
+  *) echo "Unknown environment. Please set the environment using 'set env' command." ;;
+esac
+
+if [ -f "$secret_file_key" ]; then
+  response=$(curl -s -w "\n%{http_code}" -X POST -d "input=home" -H "secret_key: $secret_key" "$uex_api_url")
+  http_code=$(echo "$response" | tail -n 1)
+  if [ "$http_code" != "200" ]; then
+    printf "\033[0;31mError ($http_code)\033[0m\n\n"
+  else
+    printf "%s" "${response%$http_code}"
+  fi
 fi
 
 while true; do
