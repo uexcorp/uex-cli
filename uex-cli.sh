@@ -93,7 +93,7 @@ load_environment
 # MOTD
 
 if [ "$secret_key" ]; then
-  send_request "home"
+  send_request "__home"
 fi
 
 # Action
