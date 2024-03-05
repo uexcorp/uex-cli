@@ -15,20 +15,20 @@ or:
 
 ## Basic commands
 
-    about // about uex cli
-    aeve // latest api events
-    apps // your api applications
-    ca // commodities averages
-    cb // commodities to buy
-    cs // commodities to sell
-    help // cli help
-    it // item finder
-    me // about you
-    rl // resources list
-    vc // vehicle storage capacity
-    vl // vehicle loaners
-    vp // vehicle prices
-    vpl // vehicle pledge store links
+aels      api events list
+als       api applications list
+cls       commodities list
+cp        commodities prices
+dls       list datarunner reports
+drk       datarunners ranking list
+ds        submit report
+help      this help
+ils       items list
+me        about you
+rls       resources list
+tls       terminals list
+vlink     vehicles links
+vls       vehicles list
 
 ## Questions? Ideas? Bugs?
 
