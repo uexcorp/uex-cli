@@ -15,20 +15,33 @@ or:
 
 ## Basic commands
 
-aels      api events list
-als       api applications list
-cls       commodities list
-cp        commodities prices
-dls       list datarunner reports
-drk       datarunners ranking list
-ds        submit report
-help      this help
-ils       items list
-me        about you
-rls       resources list
-tls       terminals list
-vlink     vehicles links
-vls       vehicles list
+> [!IMPORTANT]  
+> Commands marked with an asterisk (*) are available only when the secret key is set.  
+> Use `set key <value>` to set the secret key.
+
+| Command | Description                |
+| ------- | -------------------------- |
+| aels*   | api events list            |
+| als*    | api applications list      |
+| cls     | commodities list           |
+| cp      | commodities prices         |
+| drk*    | datarunners ranking list   |
+| fset*   | set fleet vehicle          |
+| help    | this help                  |
+| ils     | items list                 |
+| me*     | about you                  |
+| online  | users connected            |
+| rls     | resources list             |
+| sls     | supporters list            |
+| tdb*    | trade log: buy             |
+| tdbal*  | trade log: balance         |
+| tdls*   | trade log: list            |
+| tdrm*   | trade log: remove item     |
+| tds*    | trade log: sell            |
+| tdwipe* | trade log: wipe all trades |
+| tls*    | terminals list             |
+| vls     | vehicles list              |
+| wallet* | wallet balance             |
 
 ## Questions? Ideas? Bugs?
 
