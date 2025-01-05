@@ -20,7 +20,8 @@ function set_key {
     rm -f "$secret_file_key"
     printf "\033[1;33mSecret key cleared\033[0m\n"
   else
-    printf "$1" > "$secret_file_key"
+    # set secret key only accessible by current user
+    install -m 600 <(printf "$1") "$secret_file_key"
     secret_key="$1"
     printf "\033[0;32mSecret key installed\033[0m\n"
   fi
@@ -81,6 +82,10 @@ fi
 # Secret key
 
 if [ -f "$secret_file_key" ]; then
+  if [ "$(stat -Lc "%a" "$secret_file_key")" != "600" ]; then
+    chmod 600 "$secret_file_key" # silently fix permissions
+  fi
+
   secret_key=$(cat "$secret_file_key") || { printf "\033[0;31mError reading secret key file.\033[0m\n"; exit 1; }
 else
   printf "\033[1;30mNo secret key set. Use 'set key <value>' to set the secret key.\033[0m\n"
