@@ -14,8 +14,8 @@ trap 'echo "Error: Failed to install UEX CLI"; exit 1' ERR
 # wrap script in function to protect against partial execution / transmission errors
 function do_install {
     if [ "$EUID" -ne 0 ]; then
-        echo "Error: This script requires super user privileges."
-        exit
+        echo "This script requires super user privileges."
+        exit 1
     fi
 
     install_directory="/usr/local/bin"
