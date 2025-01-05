@@ -15,14 +15,39 @@ secret_file_env="$HOME/.uexenv"
 
 # Helpers
 
+function verify_key {
+  if [ -z "$1" ]; then
+    return 1
+  fi
+
+  old_secret_key="$secret_key"
+  secret_key="$1"
+  response=$(send_request "__home")
+
+  if [[ "$response" == *"Error: Invalid secret key"* ]]; then
+    secret_key="$old_secret_key"
+    return 1
+  fi
+
+  printf "$response"
+}
+
 function set_key {
   if [ -z "$1" ]; then
     rm -f "$secret_file_key"
     printf "\033[1;33mSecret key cleared\033[0m\n"
   else
-    printf "$1" > "$secret_file_key"
+    welcome=$(verify_key "$1")
+
+    if [ $? -ne 0 ]; then
+      printf "\033[0;91mInvalid secret key\033[0m\n"
+      return
+    fi
+
+    printf "$1" >"$secret_file_key"
     secret_key="$1"
     printf "\033[0;32mSecret key installed\033[0m\n"
+    printf "$welcome\n"
   fi
 }
 
