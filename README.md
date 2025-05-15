@@ -4,7 +4,7 @@ The UEX 2.0 Command Line Interface offers an alternative interaction mode with t
 ## Installation
 
     // via installer
-    $ curl -sSL https://raw.githubusercontent.com/uexcorp/uex-cli/main/install.sh | bash 
+    $ curl -sSL https://raw.githubusercontent.com/uexcorp/uex-cli/main/install.sh | sudo bash 
     $ uex   
 
 or:  
